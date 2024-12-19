@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">test4</string>
+    <string name="logo">Автодом</string>
+    <string name="hint_user_field">Введите автодом</string>
+    <string name="name_btn">Заряд аккумулятора </string>
+    <string name="name_switch">Переключатель лампы 1</string>
+    <string name="name_switch2">Переключатель лампы 2</string>
+    <string name="name_switch3">Переключатель лампы 3</string>
+</resources>
