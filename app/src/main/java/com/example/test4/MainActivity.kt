@@ -9,12 +9,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
 import java.net.URL
 import java.util.Timer
 import kotlin.concurrent.timerTask
 
 class MainActivity : AppCompatActivity() {
     private var main_btn: Button? = null
+    private var btn_plus: Button? = null
+    private var btn_minus: Button? = null
     private var result_info: TextView? = null
     private var lamp1: ImageView? = null
     private var lamp2: ImageView? = null
@@ -22,10 +26,13 @@ class MainActivity : AppCompatActivity() {
     private var lamp1_info: TextView? = null
     private var lamp2_info: TextView? = null
     private var lamp3_info: TextView? = null
+    private var temp_info: TextView? = null
     private var lampCount: Int = 0
-    private var ip: String = "192.168.88.21"
+    private var ip: String = "10.252.37.0"
     private var port: String = "8000"
     private var job: Job? = null
+    private var temperature: Int = 0
+
 
 
     @SuppressLint("MissingInflatedId")
@@ -34,6 +41,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         main_btn = findViewById(R.id.main_btn)
+        btn_plus = findViewById(R.id.btn_plus)
+        btn_minus = findViewById(R.id.btn_minus)
         result_info = findViewById(R.id.result_info)
         lamp1 = findViewById(R.id.lamp1)
         lamp2 = findViewById(R.id.lamp2)
@@ -41,27 +50,28 @@ class MainActivity : AppCompatActivity() {
         lamp1_info = findViewById(R.id.lamp1_info)
         lamp2_info = findViewById(R.id.lamp2_info)
         lamp3_info = findViewById(R.id.lamp3_info)
+        temp_info = findViewById(R.id.temp_info)
 
-        Timer().schedule( timerTask {
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val result = URL("http://$ip:$port/bat").readText()
-                    Log.d("MainActivity", "Батарея: $result")
-                    withContext(Dispatchers.Main) {
-                        result_info?.text = result
-                    }
-                } catch (ex: Exception) {
-                    Log.e("MainActivity", "Ошибка получения данных: ${ex.message}")
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            this@MainActivity,
-                            "Ошибка получения данных",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
+        btn_plus?.setOnClickListener {
+            CoroutineScope(Dispatchers.Main).launch {
+                adjustTemperature(1) //регулировка температуры
             }
-        }, 0L, 5000L)
+        }
+
+        btn_minus?.setOnClickListener {
+            CoroutineScope(Dispatchers.Main).launch {
+                adjustTemperature(-1)
+            }
+        }
+
+
+        val timer = Timer()
+        timer.schedule(timerTask {
+            CoroutineScope(Dispatchers.IO).launch {
+                updateUi()
+            }
+        }, 0, 5000)
+
 
         /*main_btn?.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
@@ -104,10 +114,63 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Обработчики кликов
         lamp1?.setOnClickListener { toggleLamp(1, lamp1, lamp1_info) }
         lamp2?.setOnClickListener { toggleLamp(2, lamp2, lamp2_info) }
         lamp3?.setOnClickListener { toggleLamp(3, lamp3, lamp3_info) }
+    }
+ //регулировка температуры
+    private suspend fun adjustTemperature(delta: Int) {
+        try {
+            val newTemp = temperature + delta
+            val url = URL("http://$ip:$port/temp?value=$newTemp")
+
+            withContext(Dispatchers.IO) {
+                val connection = url.openConnection() as HttpURLConnection
+                try {
+                    connection.requestMethod = "POST"
+                    val responseCode = connection.responseCode
+                    if (responseCode != HttpURLConnection.HTTP_OK) {
+                        val errorResponse = connection.inputStream.bufferedReader().use {
+                            it.readText()
+                        }
+                        throw Exception("Server returned non-200 response: $responseCode. Response: $errorResponse")
+                    }
+                } finally {
+                    connection.disconnect()
+                }
+
+            }
+            withContext(Dispatchers.Main) {
+                temp_info?.text = newTemp.toString()
+                temperature = newTemp
+            }
+
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error adjusting temperature: ${e.message}")
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@MainActivity, "Error adjusting temperature", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+//для гет запроса
+    private suspend fun updateUi() {
+        try {
+            val batteryResult = withContext(Dispatchers.IO) { URL("http://$ip:$port/bat").readText() }
+            val temperatureResult = withContext(Dispatchers.IO) { URL("http://$ip:$port/temp").readText() }
+
+            withContext(Dispatchers.Main) {
+                result_info?.text = batteryResult
+                temp_info?.text = temperatureResult
+                temperature = temperatureResult.toInt()
+            }
+            Log.d("MainActivity", "Battery: $batteryResult, Temperature: $temperatureResult")
+
+        } catch (ex: Exception) {
+            Log.e("MainActivity", "Error getting data: ${ex.message}")
+            withContext(Dispatchers.Main) {
+                Toast.makeText(this@MainActivity, "Error getting data", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
 
@@ -121,34 +184,34 @@ class MainActivity : AppCompatActivity() {
 
         val command = if (lampImageView.isSelected) "off" else "on"
 
-            Log.d("MainActivity", "Отправка запроса: /lamp${lampId}_$command")
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val result = URL("http://$ip:$port/lamp${lampId}_$command").readText()
-                    Log.d("MainActivity", "Получен ответ: $result")
-                    withContext(Dispatchers.Main) {
-                        if (result == "OK") {
-                            lampImageView.isSelected = !lampImageView.isSelected
-                            updateLampInfo(lampId, lampImageView.isSelected, lampInfo)
-                        } else {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Ошибка управления лампой: $result",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                } catch (ex: Exception) {
-                    Log.e("MainActivity", "Ошибка управления лампой: ${ex.message}")
-                    withContext(Dispatchers.Main) {
+        Log.d("MainActivity", "Отправка запроса: /lamp${lampId}_$command")
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val result = URL("http://$ip:$port/lamp${lampId}_$command").readText()
+                Log.d("MainActivity", "Получен ответ: $result")
+                withContext(Dispatchers.Main) {
+                    if (result == "OK") {
+                        lampImageView.isSelected = !lampImageView.isSelected
+                        updateLampInfo(lampId, lampImageView.isSelected, lampInfo)
+                    } else {
                         Toast.makeText(
                             this@MainActivity,
-                            "Ошибка управления лампой",
+                            "Ошибка управления лампой: $result",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 }
+            } catch (ex: Exception) {
+                Log.e("MainActivity", "Ошибка управления лампой: ${ex.message}")
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Ошибка управления лампой",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
+        }
 
     }
 
@@ -168,7 +231,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
 
 
 
