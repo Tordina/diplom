@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     private var lamp3_info: TextView? = null
     private var temp_info: TextView? = null
     private var lampCount: Int = 0
-    private var ip: String = "10.252.37.0"
+    private var ip: String = "192.168.0.101"
     private var port: String = "8000"
     private var job: Job? = null
     private var temperature: Int = 0
