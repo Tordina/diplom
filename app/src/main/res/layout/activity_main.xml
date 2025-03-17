@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/logo"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/montserrat"
         android:text="@string/logo"
@@ -39,7 +39,7 @@
 
     <TextView
         android:id="@+id/result_info"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginTop="20dp"
@@ -53,7 +53,7 @@
         app:layout_constraintTop_toBottomOf="@+id/main_btn" />
     <TextView
         android:id="@+id/lamp1_info"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginTop="20dp"
@@ -67,7 +67,7 @@
         app:layout_constraintTop_toBottomOf="@+id/result_info" />
     <TextView
         android:id="@+id/lamp2_info"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginTop="20dp"
@@ -81,7 +81,7 @@
         app:layout_constraintTop_toBottomOf="@+id/lamp1_info" />
     <TextView
         android:id="@+id/lamp3_info"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
         android:layout_marginTop="20dp"
@@ -96,44 +96,48 @@
 
     <RelativeLayout
         android:id="@+id/relativeLayoutLamps"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lamp3_info">
 
         <ImageView
             android:id="@+id/avtodom_image"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scaleType="fitXY"
-            android:src="@drawable/avtodom" />
+            android:layout_width="wrap_content"
+            android:layout_height="170dp"
+            android:src="@drawable/avtodom"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
             android:id="@+id/lamp1"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginTop="180dp"
-            android:layout_marginStart="250dp"
+            android:layout_marginStart="80dp"
+            android:layout_marginTop="60dp"
             android:src="@drawable/lamp_off"
-            android:scaleType="fitCenter" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <ImageView
             android:id="@+id/lamp2"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginTop="230dp"
-            android:layout_marginStart="485dp"
-            android:src="@drawable/lamp_off"
-            android:scaleType="fitCenter" />
+            android:layout_marginStart="190dp"
+            android:layout_marginTop="70dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/lamp_off" />
 
         <ImageView
             android:id="@+id/lamp3"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginTop="200dp"
-            android:layout_marginStart="920dp"
-            android:src="@drawable/lamp_off"
-            android:scaleType="fitCenter" />
+            android:layout_marginStart="330dp"
+            android:layout_marginTop="60dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/lamp_off" />
     </RelativeLayout>
 
     <Button
@@ -151,11 +155,9 @@
         app:layout_constraintTop_toBottomOf="@+id/relativeLayoutLamps" />
     <TextView
         android:id="@+id/temp_info"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="50dp"
         android:fontFamily="@font/montserrat"
         android:textAlignment="center"
         android:textColor="@color/textColor"
@@ -163,52 +165,33 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_temp" />
-    <LinearLayout
-        android:id="@+id/buttons_container_horizontal"
+    <Button
+        android:id="@+id/btn_plus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/colorAccent"
+        android:fontFamily="@font/montserrat"
+        android:text="@string/btn_plus"
+        android:textColor="@color/textColor"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/temp_info"
+        app:layout_constraintTop_toBottomOf="@+id/temp_info" />
+    <Button
+        android:id="@+id/btn_minus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:gravity="center">
+        android:backgroundTint="@color/colorAccent"
+        android:fontFamily="@font/montserrat"
+        android:text="@string/btn_minus"
+        android:textColor="@color/textColor"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_plus" />
 
-        <LinearLayout
-            android:id="@+id/buttons_container_vertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
 
-            <Button
-                android:id="@+id/btn_plus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorAccent"
-                android:fontFamily="@font/montserrat"
-                android:text="@string/btn_plus"
-                android:textColor="@color/textColor"
-                android:textSize="20sp"
-                />
-            <Button
-                android:id="@+id/btn_minus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/colorAccent"
-                android:fontFamily="@font/montserrat"
-                android:text="@string/btn_minus"
-                android:textColor="@color/textColor"
-                android:textSize="20sp"
-                />
-        </LinearLayout>
 
-        <ImageView
-            android:id="@+id/temperature"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:src="@drawable/temperature"
-            android:scaleType="fitCenter"
-            />
-
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
