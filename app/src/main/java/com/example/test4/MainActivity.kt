@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     private var lampCount = 0
     private var temperature = 0
-    private val ip = "172.20.10.2"
+    private val ip = "192.168.88.21"
     private val port = "8000"
 
     @SuppressLint("MissingInflatedId")
