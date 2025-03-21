@@ -17,7 +17,7 @@ class BatteryActivity : AppCompatActivity() {
 
     private lateinit var resultInfo: TextView
 
-    private val ip = "192.168.88.52" //Retrofit
+    private val ip = "192.168.0.103" //Retrofit
     private val port = "8000"
 
     override fun onCreate(savedInstanceState: Bundle?) {

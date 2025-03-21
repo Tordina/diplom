@@ -69,6 +69,68 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="20dp"/>
 
+    <Switch
+        android:id="@+id/mode_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Автоматический режим"
+        app:layout_constraintTop_toBottomOf="@id/heater_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"/>
+    <!-- Ручное управление -->
+    <LinearLayout
+        android:id="@+id/manual_controls"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/mode_switch"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="10dp"
+        android:visibility="visible">
+
+        <!-- Кнопки ручного управления -->
+        <Button
+            android:id="@+id/btn_heater_on"
+            android:text="Включить обогрев"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/btn_heater_off"
+            android:text="Выключить обогрев"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+    <!-- Автоматический режим -->
+    <LinearLayout
+        android:id="@+id/auto_controls"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/mode_switch"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="10dp"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/target_input"
+            android:inputType="number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Целевая температура"/>
+
+        <Button
+            android:id="@+id/btn_set_target"
+            android:text="Установить"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+    </LinearLayout>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/back_btn"
         android:layout_width="match_parent"
@@ -79,7 +141,10 @@
         app:cornerRadius="16dp"
         android:layout_marginTop="40dp"
         app:layout_constraintTop_toBottomOf="@id/heater_image"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="16dp"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

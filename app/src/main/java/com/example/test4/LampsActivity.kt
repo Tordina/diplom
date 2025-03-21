@@ -20,7 +20,7 @@ class LampsActivity : AppCompatActivity() {
     private lateinit var lampSwitches: List<SwitchMaterial>
     private var lampCount = 0
 
-    private val ip = "192.168.88.52"
+    private val ip = "192.168.0.103"
     private val port = "8000"
 
     override fun onCreate(savedInstanceState: Bundle?) {
