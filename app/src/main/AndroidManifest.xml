@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -12,9 +12,38 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.Test4"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".WaterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TemperatureActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LampsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LamosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Test4" />
+        <activity
+            android:name=".BatteryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Test4" />
+        <activity
+            android:name=".WaterFragment"
+            android:exported="false" />
+        <activity
+            android:name=".LampsFragment"
+            android:exported="false" />
+        <activity
+            android:name=".TemperatureFragment"
+            android:exported="false" />
+        <activity
+            android:name=".BatteryFragment"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -24,6 +53,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#FFF8DC</color>
-    <color name="colorPrimaryDark">#000</color>
-    <color name="colorAccept">#4682B4</color>
-    <color name="textColor">#333</color>
-    <color name="colorAccent">#DCDCDC</color>
+    <color name="colorBackground">#F3F4F6</color>
+    <color name="colorPrimaryDark">#263238</color>
+    <color name="colorAccept">#4CAF50</color>
+    <color name="textColorPrimary">#212121</color>
+    <color name="shadowColor">#40000000</color>
+    <color name="colorBackgroundStart">#DCECF7</color>
+    <color name="colorBackgroundEnd">#8693AB</color>
+    <color name="colorPrimary">#3A6351</color>
+    <color name="colorAccent">#2C786C</color>
+    <color name="textColor">#FFFFFF</color>
+    <color name="cardBackground">#FDFDFD</color>
 </resources>
