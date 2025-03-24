@@ -11,4 +11,7 @@
     <color name="colorAccent">#2C786C</color>
     <color name="textColor">#FFFFFF</color>
     <color name="cardBackground">#FDFDFD</color>
+    <color name="button_default">#2C786C</color>
+    <color name="button_active">#8c002a</color>
+    <color name="button_inactive">#696969</color>
 </resources>
