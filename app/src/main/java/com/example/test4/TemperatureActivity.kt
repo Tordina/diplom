@@ -111,23 +111,57 @@ class TemperatureActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btn_heater_on).setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                val response = makeGetRequest("/heater_on")
-                if (response != null) {
-                    withContext(Dispatchers.Main) {
-                        updateButtonColors(true)
+            CoroutineScope(Dispatchers.Main).launch { // Запускаем в Main потоке для UI операций
+                try {
+                    // Показываем ProgressBar и блокируем кнопки
+                    progressBar.visibility = View.VISIBLE
+                    btnHeaterOn.isEnabled = false
+                    btnHeaterOff.isEnabled = false
+
+                    // Выполняем сетевой запрос в IO потоке
+                    val response = withContext(Dispatchers.IO) {
+                        makeGetRequest("/heater_on")
                     }
+
+                    if (response != null) {
+                        updateButtonColors(true)
+                        // Обновляем данные с сервера
+                        updateTemperature()
+                    }
+                } catch (e: Exception) {
+                    Log.e("TemperatureActivity", "Ошибка включения обогрева: ${e.message}")
+                } finally {
+                    // Всегда скрываем ProgressBar и разблокируем кнопки
+                    delay(3000)
+                    progressBar.visibility = View.GONE
+                    btnHeaterOn.isEnabled = true
+                    btnHeaterOff.isEnabled = true
                 }
             }
         }
 
         findViewById<Button>(R.id.btn_heater_off).setOnClickListener {
-            CoroutineScope(Dispatchers.IO).launch {
-                val response = makeGetRequest("/heater_off")
-                if (response != null) {
-                    withContext(Dispatchers.Main) {
-                        updateButtonColors(false)
+            CoroutineScope(Dispatchers.Main).launch {
+                try {
+                    progressBar.visibility = View.VISIBLE
+                    btnHeaterOn.isEnabled = false
+                    btnHeaterOff.isEnabled = false
+
+                    val response = withContext(Dispatchers.IO) {
+                        makeGetRequest("/heater_off")
                     }
+
+                    if (response != null) {
+                        updateButtonColors(false)
+                        updateTemperature()
+                    }
+                } catch (e: Exception) {
+                    Log.e("TemperatureActivity", "Ошибка выключения обогрева: ${e.message}")
+                } finally {
+                    delay(3000)
+                    progressBar.visibility = View.GONE
+                    btnHeaterOn.isEnabled = true
+                    btnHeaterOff.isEnabled = true
                 }
             }
         }
