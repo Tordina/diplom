@@ -8,10 +8,8 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.switchmaterial.SwitchMaterial
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.URL
@@ -22,17 +20,17 @@ class LampsActivity : AppCompatActivity() {
 
     private lateinit var lampViews: List<ImageView>
     private lateinit var lampInfos: List<TextView>
-    private lateinit var lampSwitches: List<SwitchMaterial>
+    private lateinit var lampButtons: List<Button>
     private lateinit var progressBar: ProgressBar
     private var lampCount = 0
-
-    private val ip = "172.20.10.4"
-    private val port = "8000"
+    private lateinit var ip: String
+    private lateinit var port: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lamps)
-
+        ip = getString(R.string.server_ip)
+        port = getString(R.string.server_port)
         lampViews = listOf(
             findViewById(R.id.lamp1),
             findViewById(R.id.lamp2),
@@ -43,37 +41,31 @@ class LampsActivity : AppCompatActivity() {
             findViewById(R.id.lamp2_info),
             findViewById(R.id.lamp3_info)
         )
-        lampSwitches = listOf(
-            findViewById(R.id.switch1),
-            findViewById(R.id.switch2),
-            findViewById(R.id.switch3)
+        lampButtons = listOf(
+            findViewById(R.id.button1),
+            findViewById(R.id.button2),
+            findViewById(R.id.button3)
         )
         progressBar = findViewById(R.id.progressBar)
 
-        //  ProgressBar при запуске
         progressBar.visibility = View.VISIBLE
 
         initializeLampCount()
-        updateLampStates()
-
-        lampViews.forEachIndexed { index, imageView ->
-            imageView.setOnClickListener { toggleLamp(index + 1) }
-        }
-
-        lampSwitches.forEachIndexed { index, switch ->
-            switch.setOnCheckedChangeListener { _, isChecked ->
-                toggleLamp(index + 1, isChecked)
-            }
-        }
 
         val backButton: Button = findViewById(R.id.back_btn)
         backButton.setOnClickListener {
             finish()
         }
 
+        lampButtons.forEachIndexed { index, switch ->
+            switch.setOnClickListener() {
+                toggleLamp(index + 1)
+            }
+        }
+
         Timer().schedule(timerTask {
             updateLampStates()
-        }, 0, 3000)
+        }, 0, 1000)
     }
 
     override fun onResume() {
@@ -84,15 +76,17 @@ class LampsActivity : AppCompatActivity() {
     private fun updateLampStates() {
         CoroutineScope(Dispatchers.IO).launch {
 
-            delay(2000) //для прогресс бара
-
             for (i in 1..lampCount) {
                 val response = makeGetRequest("/lamp${i}_state") ?: continue
                 val isOn = response.trim() == "ON"
+
                 withContext(Dispatchers.Main) {
                     lampViews[i - 1].isSelected = isOn
-                    lampSwitches[i - 1].isChecked = isOn
-                    updateLampUIs()
+                    lampInfos.getOrNull(i - 1)?.text =
+                        "Лампа $i: ${if (isOn) "Включена" else "Выключена"}"
+                    lampViews.getOrNull(i - 1)
+                        ?.setImageResource(if (isOn) R.drawable.lamp_on else R.drawable.lamp_off)
+                    lampButtons.getOrNull(i - 1)?.text = if (isOn) "Вкл" else "Выкл"
                 }
             }
 
@@ -104,11 +98,9 @@ class LampsActivity : AppCompatActivity() {
 
     private fun initializeLampCount() {
         CoroutineScope(Dispatchers.IO).launch {
-            val response = makeGetRequest("/config") ?: return@launch
-            Log.d("LampsActivity", "Ответ от сервера (количество ламп): $response")
 
+            val response = makeGetRequest("/config") ?: return@launch
             lampCount = response.toIntOrNull() ?: 0
-            Log.d("LampsActivity", "Количество ламп: $lampCount")
 
             if (lampCount == 0) {
                 Log.e("LampsActivity", "Ошибка: количество ламп равно 0")
@@ -118,49 +110,22 @@ class LampsActivity : AppCompatActivity() {
                 }
                 return@launch
             }
-
-            withContext(Dispatchers.Main) {
-                updateLampStates() // только после получения данных
-            }
         }
     }
 
-    private fun toggleLamp(lampId: Int, switchState: Boolean? = null) {
+    private fun toggleLamp(lampId: Int) {
         CoroutineScope(Dispatchers.IO).launch {
+
             val isCurrentlyOn = lampViews[lampId - 1].isSelected
-            val shouldTurnOn = switchState ?: !isCurrentlyOn
-            val command = if (shouldTurnOn) "on" else "off"
+            val command = if (lampViews[lampId - 1].isSelected) "off" else "on"
 
             withContext(Dispatchers.Main) {
-                lampSwitches[lampId - 1].isEnabled = false
-                lampInfos[lampId - 1].text = "Лампа $lampId: обновление..."
+                lampButtons[lampId - 1].text = if (!isCurrentlyOn) "Вкл" else "Выкл"
                 lampViews[lampId - 1].setImageResource(R.drawable.loading)
             }
 
-            val response = makeGetRequest("/lamp${lampId}_$command")
-
-            withContext(Dispatchers.Main) {
-                if (response == "OK") {
-                    lampViews[lampId - 1].isSelected = shouldTurnOn
-                    lampSwitches[lampId - 1].isChecked = shouldTurnOn
-                    updateLampInfo(lampId, shouldTurnOn)
-                } else {
-                    updateLampInfo(lampId, isCurrentlyOn)
-                }
-                lampSwitches[lampId - 1].isEnabled = true
-            }
+            makeGetRequest("/lamp${lampId}_$command")
         }
-    }
-
-    private fun updateLampUIs() {
-        lampViews.forEachIndexed { index, imageView ->
-            updateLampInfo(index + 1, imageView.isSelected)
-        }
-    }
-
-    private fun updateLampInfo(lampId: Int, isOn: Boolean) {
-        lampInfos.getOrNull(lampId - 1)?.text = "Лампа $lampId: ${if (isOn) "Включена" else "Выключена"}"
-        lampViews.getOrNull(lampId - 1)?.setImageResource(if (isOn) R.drawable.lamp_on else R.drawable.lamp_off)
     }
 
     private fun makeGetRequest(endpoint: String): String? {

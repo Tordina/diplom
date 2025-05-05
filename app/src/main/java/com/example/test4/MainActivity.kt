@@ -23,5 +23,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.water_btn).setOnClickListener {
             startActivity(Intent(this, WaterActivity::class.java))
         }
+        findViewById<Button>(R.id.ventilation_btn).setOnClickListener {
+            startActivity(Intent(this, VentilationActivity::class.java))
+        }
     }
 }

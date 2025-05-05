@@ -14,4 +14,12 @@
     <color name="button_default">#2C786C</color>
     <color name="button_active">#8c002a</color>
     <color name="button_inactive">#696969</color>
+    <color name="button_active_lamps">#FFD700</color>
+    <color name="primaryDark">#2A3B46</color>
+    <color name="primaryLight">#E8D8C4</color>
+    <color name="secondaryMuted">#A7B8C1</color>
+    <color name="accentWarm">#D97D54</color>
+    <color name="accentNature">#6B8E6F</color>
+    <color name="accentSun">#FFD166</color>
+    <color name="translucentDark">#802A3B46</color>
 </resources>

@@ -16,14 +16,15 @@ import kotlin.concurrent.timerTask
 class BatteryActivity : AppCompatActivity() {
 
     private lateinit var resultInfo: TextView
-
-    private val ip = "192.168.88.52" //Retrofit
-    private val port = "8000"
+    private lateinit var ip: String
+    private lateinit var port: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_battery)
 
+        setContentView(R.layout.activity_battery)
+        ip = getString(R.string.server_ip)
+        port = getString(R.string.server_port)
         resultInfo = findViewById(R.id.result_info)
 
         val backButton: Button = findViewById(R.id.back_btn)
